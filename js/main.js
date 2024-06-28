@@ -98,20 +98,6 @@ document.addEventListener("keydown", function(event) {
     document.getElementById("Impersonate").click();
   }
 
-  // Switch between tabs on Tab
-  else if (!event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey && event.key === "Tab") {
-    event.preventDefault();
-    var parametersButton = document.getElementById("parameters-button");
-    var parentContainer = parametersButton.parentNode;
-    var selectedChild = parentContainer.querySelector(".selected");
-
-    if (selectedChild.id == "parameters-button") {
-      document.getElementById(previousTabId).click();
-    } else {
-      previousTabId = selectedChild.id;
-      parametersButton.click();
-    }
-  }
 });
 
 //------------------------------------------------
@@ -144,22 +130,21 @@ targetElement.addEventListener("scroll", function() {
 
 // Create a MutationObserver instance
 const observer = new MutationObserver(function(mutations) {
-  mutations.forEach(function(mutation) {
-    updateCssProperties();
+  updateCssProperties();
 
-    const firstChild = targetElement.children[0];
-    if (firstChild.classList.contains("generating")) {
-      typing.parentNode.classList.add("visible-dots");
-      document.getElementById("stop").style.display = "flex";
-      document.getElementById("Generate").style.display = "none";
-    } else {
-      typing.parentNode.classList.remove("visible-dots");
-      document.getElementById("stop").style.display = "none";
-      document.getElementById("Generate").style.display = "flex";
-    }
+  const firstChild = targetElement.children[0];
+  if (firstChild.classList.contains("generating")) {
+    typing.parentNode.classList.add("visible-dots");
+    document.getElementById("stop").style.display = "flex";
+    document.getElementById("Generate").style.display = "none";
+  } else {
+    typing.parentNode.classList.remove("visible-dots");
+    document.getElementById("stop").style.display = "none";
+    document.getElementById("Generate").style.display = "flex";
+  }
 
-    doSyntaxHighlighting();
-  });
+
+  doSyntaxHighlighting();
 
   if(!isScrolled) {
     targetElement.scrollTop = targetElement.scrollHeight;
@@ -215,6 +200,9 @@ function doSyntaxHighlighting() {
     indexes.forEach((index) => {
       const element = elements[index];
 
+      // Tag this element to prevent it from being highlighted twice
+      element.setAttribute("data-highlighted", "true");
+
       // Perform syntax highlighting
       const codeBlocks = element.querySelectorAll("pre code");
 
@@ -231,8 +219,6 @@ function doSyntaxHighlighting() {
         ],
       });
 
-      // Tag this element to indicate it has been syntax highlighted
-      element.setAttribute("data-highlighted", "true");
     });
 
     observer.observe(targetElement, config);
@@ -548,3 +534,8 @@ document.querySelectorAll(".focus-on-chat-input").forEach(element => {
     document.querySelector("#chat-input textarea").focus();
   });
 });
+
+//------------------------------------------------
+// Fix a border around the "past chats" menu
+//------------------------------------------------
+document.getElementById("past-chats").parentNode.style.borderRadius = "0px";
